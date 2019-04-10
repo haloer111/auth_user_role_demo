@@ -5,8 +5,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.gexiao.demo.common.UserConstant;
 import com.gexiao.demo.dao.UserMapper;
 import com.gexiao.demo.entity.User;
+import com.gexiao.demo.service.IUserRoleService;
 import com.gexiao.demo.service.IUserService;
+import com.gexiao.demo.util.JWTUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +24,9 @@ import java.util.Optional;
  */
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
+
+    @Autowired
+    private IUserRoleService userRoleService;
 
     @Override
     @Transactional
@@ -73,7 +79,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             throw new RuntimeException("密码错误");
 
         //生成token
+        return JWTUtil.generateToken(new JWTUtil.UserInfo()
+                                         .setId(user.getId())
+                                         .setLoginName(user.getLoginName())
+                                         .setRoles(userRoleService.rolesByUserId(user.getId()))
+                                         .setName(user.getName())
+                              );
 
-        return null;
     }
 }

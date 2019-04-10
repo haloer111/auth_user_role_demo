@@ -3,6 +3,7 @@ package com.gexiao.demo.config;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.gexiao.demo.Intercept.LoginInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -15,6 +16,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.nio.charset.StandardCharsets;
@@ -77,23 +79,23 @@ public class SpringMvcConfig implements WebMvcConfigurer {
         }};
     }
 
-//    /**
-//     * 添加拦截器
-//     *
-//     * @param registry
-//     */
-//    @Override
-//    public void addInterceptors(InterceptorRegistry registry) {
-//        registry.addInterceptor(loginInterceptor()).addPathPatterns("/**");
-//    }
-//
-//    /**
-//     * 注入拦截器给spring管理，不然无法读取配置文件
-//     */
-//    @Bean
-//    public LoginInterceptor loginInterceptor() {
-//        return new LoginInterceptor();
-//    }
+    /**
+     * 添加拦截器
+     *
+     * @param registry
+     */
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(loginInterceptor()).addPathPatterns("/**");
+    }
+
+    /**
+     * 注入拦截器给spring管理，不然无法读取配置文件
+     */
+    @Bean
+    public LoginInterceptor loginInterceptor() {
+        return new LoginInterceptor();
+    }
 
 
     /**

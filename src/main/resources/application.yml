@@ -1,5 +1,6 @@
 server:
   port: 8062
+
 spring:
   datasource:
     url: jdbc:mysql://127.0.0.1:3306/test?serverTimezone=GMT%2B8
@@ -9,3 +10,15 @@ spring:
 
 mybatis-plus:
   mapper-locations: classpath*:mapper/*.xml
+# 打印sql
+logging:
+  level:
+    com.gexiao.demo.dao : debug
+# 网关参数
+gateway:
+  # 不校验的uri
+  unchecked:
+    - /user/login
+    - /user/add
+
+
