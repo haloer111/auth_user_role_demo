@@ -3,7 +3,12 @@ package com.gexiao.demo.Intercept;
 import com.alibaba.fastjson.JSONObject;
 import com.gexiao.demo.common.Result;
 import com.gexiao.demo.config.GatewayParams;
+import com.gexiao.demo.entity.Authority;
+import com.gexiao.demo.entity.RoleAuth;
+import com.gexiao.demo.service.IAuthService;
+import com.gexiao.demo.service.impl.IRoleAuthService;
 import com.gexiao.demo.util.JWTUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,6 +18,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 登录拦截器,用于鉴权
@@ -23,12 +31,19 @@ import java.nio.charset.StandardCharsets;
  */
 public class LoginInterceptor implements HandlerInterceptor {
 
+    private final static String[] DEFAULT_HTTP_METHOD_LIST = {"GET","POST","DELETE","PUT"};
+
     @Autowired
     private GatewayParams gatewayParams;
+    @Autowired
+    private IAuthService authService;
+    @Autowired
+    private IRoleAuthService roleAuthService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String uri = request.getRequestURI();
+        String method = request.getMethod();
         System.out.println("请求uri = " + uri);
 
         // 是否需要拦截
@@ -43,15 +58,30 @@ public class LoginInterceptor implements HandlerInterceptor {
         }
 
         //校验用户的权限
+        List<Authority> resources = authService.list();
+        //权限资源列表,如果匹配的
+        if (resources.stream().anyMatch(e -> matchUri(uri, e.getUrl()))) {
+            for (String role : user.getRoles()) {
+                //角色拥有的资源权限
+                List<String> authIdList = roleAuthService.listByRoleId(role).stream().map(RoleAuth::getAuthId).collect(Collectors.toList());
+                Collection<Authority> authList = authService.listByIds(authIdList);
+                if (authList.stream().noneMatch(roleAuth -> (matchUri(uri, roleAuth.getUrl())
+                                                          && matchMethod(method, roleAuth.getHttpMethod())))) {
+                    respondToClientMsg(response, "用户没有权限");
+                    return false;
+                }
+                break;
+            }
+        }
 
-
-        return false;
+        return true;
     }
 
     /**
      * 响应给客户端内容
+     *
      * @param response
-     * @param msg 响应内容
+     * @param msg      响应内容
      * @throws IOException
      */
     private void respondToClientMsg(HttpServletResponse response, String msg) throws IOException {
@@ -68,6 +98,49 @@ public class LoginInterceptor implements HandlerInterceptor {
         boolean flag = false;
         for (String unchecked : gatewayParams.getUnchecked()) {
             if (unchecked.equals(uri))
+                flag = true;
+        }
+        return flag;
+    }
+
+    /**
+     * 匹配url
+     *
+     * @param uri     需要匹配的uri
+     * @param destUri 目标uri
+     * @return
+     */
+    private boolean matchUri(String uri, String destUri) {
+        //先处理destUri存在/**的路径
+        if (destUri.matches(".*[\\*]{2}"))
+            // /xxx/.*
+            destUri = destUri.substring(0, destUri.length() - 2) + ".*";
+        else
+            destUri = destUri + ".*";
+        return uri.matches(destUri);
+    }
+
+
+    /**
+     * 匹配httpMethod
+     *
+     * @param method     方法
+     * @param destMethod 目标方法
+     * @return
+     */
+    private boolean matchMethod(String method, String destMethod) {
+        boolean flag = false;
+        String[] methods;
+
+        if (StringUtils.isBlank(destMethod))
+            return false;
+
+        if (destMethod.matches("\\*"))
+            methods = DEFAULT_HTTP_METHOD_LIST;
+        else
+            methods = destMethod.split(",");
+        for (String m : methods) {
+            if (method.equalsIgnoreCase(m))
                 flag = true;
         }
         return flag;
