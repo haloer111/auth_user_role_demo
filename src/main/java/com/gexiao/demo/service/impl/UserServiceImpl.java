@@ -8,6 +8,7 @@ import com.gexiao.demo.entity.User;
 import com.gexiao.demo.service.IUserRoleService;
 import com.gexiao.demo.service.IUserService;
 import com.gexiao.demo.util.JWTUtil;
+import com.gexiao.demo.util.UserUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -86,5 +87,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                                          .setName(user.getName())
                               );
 
+    }
+
+    @Override
+    public boolean updatePassword(String oldPassword, String newPassword) {
+        String userId = UserUtil.getCurrentUserId();
+
+        //校验用户
+        User user = getById(userId);
+        Optional.ofNullable(user).orElseThrow(() -> new RuntimeException("查询不到该用户"));
+
+        if (!new BCryptPasswordEncoder(UserConstant.PASSWORD_ENCODER_SALT).matches(oldPassword, user.getLoginPassword()))
+            throw new RuntimeException("查询不到该用户");
+
+        //修改密码
+        return updateById(new User() {{
+            setId(userId);
+            setLoginPassword(new BCryptPasswordEncoder(UserConstant.PASSWORD_ENCODER_SALT).encode(newPassword));
+            setUpdateTime(new Date());
+        }});
     }
 }

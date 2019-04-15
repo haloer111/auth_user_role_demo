@@ -1,4 +1,4 @@
-package com.gexiao.demo.service.impl;
+package com.gexiao.demo.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;

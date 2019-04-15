@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.gexiao.demo.dao.RoleAuthMapper;
 import com.gexiao.demo.entity.RoleAuth;
+import com.gexiao.demo.service.IRoleAuthService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

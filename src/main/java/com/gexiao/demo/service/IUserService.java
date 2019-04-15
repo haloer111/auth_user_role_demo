@@ -34,4 +34,12 @@ public interface IUserService extends IService<User> {
      * @return token
      */
     String login(String loginName,String loginPassword);
+
+    /**
+     * 修改密码
+     * @param oldPassword 旧密码
+     * @param newPassword 新密码
+     * @return
+     */
+    boolean updatePassword(String oldPassword, String newPassword);
 }

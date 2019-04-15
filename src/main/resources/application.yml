@@ -20,5 +20,6 @@ gateway:
   unchecked:
     - /user/login
     - /user/add
+    - /user/logout
 
 

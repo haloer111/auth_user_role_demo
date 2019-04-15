@@ -2,11 +2,12 @@ package com.gexiao.demo.Intercept;
 
 import com.alibaba.fastjson.JSONObject;
 import com.gexiao.demo.common.Result;
+import com.gexiao.demo.common.UserConstant;
 import com.gexiao.demo.config.GatewayParams;
 import com.gexiao.demo.entity.Authority;
 import com.gexiao.demo.entity.RoleAuth;
 import com.gexiao.demo.service.IAuthService;
-import com.gexiao.demo.service.impl.IRoleAuthService;
+import com.gexiao.demo.service.IRoleAuthService;
 import com.gexiao.demo.util.JWTUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 public class LoginInterceptor implements HandlerInterceptor {
 
     private final static String[] DEFAULT_HTTP_METHOD_LIST = {"GET","POST","DELETE","PUT"};
+
 
     @Autowired
     private GatewayParams gatewayParams;
@@ -73,6 +75,10 @@ public class LoginInterceptor implements HandlerInterceptor {
                 break;
             }
         }
+
+        //将用户名.id放入request中
+        request.setAttribute(UserConstant.USER_ID,user.getId());
+        request.setAttribute(UserConstant.NAME,user.getName());
 
         return true;
     }

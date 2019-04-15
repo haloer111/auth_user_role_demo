@@ -4,11 +4,12 @@ import com.alibaba.fastjson.JSON;
 import com.gexiao.demo.common.Result;
 import com.gexiao.demo.entity.User;
 import com.gexiao.demo.service.IUserService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
 
@@ -24,10 +25,31 @@ import static com.alibaba.fastjson.serializer.SerializerFeature.WriteDateUseDate
 @RequestMapping("user")
 public class UserController extends BaseController<IUserService, User> {
 
-
+    /**
+     * 登录
+     * @param body { loginName -> 用户名, loginPass -> 密码 }
+     * @return
+     */
     @PostMapping("login")
     public Result login(@RequestBody Map<String, String> body) {
         return Result.ok(service.login(body.get("loginName"), body.get("loginPass")));
+    }
+
+    /**
+     * 修改密码
+     * @param body { old -> 旧密码 , new -> 新密码}
+     * @return
+     */
+    @PostMapping("update/password")
+    public Result updatePassword(@RequestBody Map<String, String> body) {
+        return Result.ok(service.updatePassword(body.get("old"), body.get("new")));
+    }
+
+    @GetMapping("logout")
+    public Result logout(@RequestParam String token) {
+        Jws<Claims> claims = Jwts.parser().setSigningKey(Base64.getEncoder().encodeToString("gexiao".getBytes())).parseClaimsJws(token);
+        claims.getBody().setId("x");
+        return null;
     }
 
 
