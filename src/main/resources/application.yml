@@ -6,6 +6,8 @@ server:
 #    driver-class-name: com.mysql.jdbc.Driver
 #    username: root
 #    password: root
+
+
 spring:
   datasource:
     # 数据库名
