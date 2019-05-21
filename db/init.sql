@@ -17,10 +17,12 @@ create table `sys_user`
   default charset = utf8mb4
   comment = '用户表';
 begin ;
+-- login：111，password：111
 insert into sys_user(id, name, login_name, login_password, create_time, update_time)
-VALUES ('1','用户1','user1','111',now(),now());
+VALUES ('1','用户1','111','$2a$07$dIyptT/6/NHvx6ur29u3A.IdO3a5zGbh34L.PHnxK96ZITmk2TRhe',now(),now());
+-- login：222，password：222
 insert into sys_user(id, name, login_name, login_password, create_time, update_time)
-VALUES ('2','用户2','user2','222',now(),now());
+VALUES ('2','用户2','222','$2a$07$PrlVx.K9pEtDHolCt.xiw.FZDUTddxaJEpzXVrurmP2IB2VhVabWW',now(),now());
 commit ;
 
 -- 角色表
