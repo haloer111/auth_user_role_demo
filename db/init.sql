@@ -2,7 +2,7 @@ use test;
 
 -- 用户表
 drop table if exists `sys_user`;
-create table sys_user
+create table `sys_user`
 (
   id             varchar(64) primary key,
   name           varchar(64) unique key comment '用户名称',
@@ -17,9 +17,9 @@ create table sys_user
   default charset = utf8mb4
   comment = '用户表';
 begin ;
-insert into test.sys_user(id, name, login_name, login_password, create_time, update_time)
+insert into sys_user(id, name, login_name, login_password, create_time, update_time)
 VALUES ('1','用户1','user1','111',now(),now());
-insert into test.sys_user(id, name, login_name, login_password, create_time, update_time)
+insert into sys_user(id, name, login_name, login_password, create_time, update_time)
 VALUES ('2','用户2','user2','222',now(),now());
 commit ;
 
@@ -37,9 +37,9 @@ create table `sys_role`
   default charset = utf8mb4
   comment = '角色表';
 begin ;
-insert into test.`sys_role`
+insert into `sys_role`
 values ('1' , 'default','默认角色',now(),now());
-insert into test.`sys_role`
+insert into `sys_role`
 values ('2' , 'normal','普通角色',now(),now());
 commit ;
 
@@ -61,9 +61,9 @@ create table `sys_authority`
   comment = '权限资源表';
 
 begin ;
-insert into test.sys_authority(id, url, http_method, description, ordered, create_time, update_time)
+insert into sys_authority(id, url, http_method, description, ordered, create_time, update_time)
 VALUES ('1','/**','*','全部模块',1,now(),now());
-insert into test.sys_authority(id, url, http_method, description, ordered, create_time, update_time)
+insert into sys_authority(id, url, http_method, description, ordered, create_time, update_time)
 VALUES ('2','/user/test','get','用户模块',2,now(),now());
 commit ;
 
@@ -82,9 +82,9 @@ create table `sys_user_role`
   comment = '用户角色关系表';
 
 begin ;
-insert into test.sys_user_role(id, user_id, role_id, create_time, update_time)
+insert into sys_user_role(id, user_id, role_id, create_time, update_time)
 VALUES ('1','1','1',now(),now());
-insert into test.sys_user_role(id, user_id, role_id, create_time, update_time)
+insert into sys_user_role(id, user_id, role_id, create_time, update_time)
 VALUES ('2','2','2',now(),now());
 commit ;
 
@@ -103,8 +103,8 @@ create table `sys_role_auth`
   comment = '角色权限资源关系表';
 
 begin ;
-insert into test.sys_role_auth(id, role_id, auth_id, create_time, update_time)
+insert into sys_role_auth(id, role_id, auth_id, create_time, update_time)
 values ('1','1','1',now(),now());
-insert into test.sys_role_auth(id, role_id, auth_id, create_time, update_time)
+insert into sys_role_auth(id, role_id, auth_id, create_time, update_time)
 values ('2','2','2',now(),now());
 commit ;
